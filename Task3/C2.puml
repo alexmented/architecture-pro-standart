@@ -1,0 +1,46 @@
+@startuml
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+
+Person(customer, "Клиент", "Клиент банка")
+Person(back_office_person, "Сотрудник бэк-офиса")
+Person(call_center_agents, "Оператор колл-центра")
+
+System_Boundary(serviceBoundary, "Сервисы в контуре банка") {
+  System_Boundary(serviceBoundaryInner, "Сервисы депозита банка") {
+    System(gateway, "API gateway")
+    System(authorization_service, "Authorization and authentification")
+    System(deposit_service_db, "Deposit Service DB", "База данных заявок")
+    System(authorization_service_db, "Authorization DB", "База данных пользователей")
+    System(async_service, "Async Service", "Kafka")
+    System(notification_service, "Notification Service", "Уведомления")
+    System(deposit_service, "Deposit Service", "Работа с депозитами")
+    System(site, "Сайт")
+    System(internet_banking, "Интернет-банк")
+  }
+  System(abs, "АБС", "Автоматизированная банковская система")
+  System(call_center, "Колл-центр", "CRM-платформа")
+}
+
+
+System_Ext(sms_operator, "Телеком оператор", "Оператор для отправки СМС")
+
+Rel(customer, site, "Просмотр депозитов и подача онлайн-заявок")
+Rel(customer, internet_banking, "Подача онлайн-заявок")
+Rel(call_center_agents, call_center, "Создание заявки на депозит")
+Rel(back_office_person, abs, "Обработка заявок")
+Rel(site, gateway, "HTTP")
+Rel(internet_banking, gateway, "HTTP")
+Rel(gateway, authorization_service, "HTTP")
+Rel(gateway, notification_service, "HTTP")
+Rel(notification_service, call_center, "HTTP")
+Rel(notification_service, sms_operator, "HTTP")
+Rel(gateway, deposit_service, "HTTP")
+Rel(async_service, abs, "Обработка событий")
+Rel(sms_operator, customer, "Отправка СМС")
+Rel(deposit_service, async_service, "Обработка событий")
+Rel(notification_service, async_service, "Обработка событий")
+Rel(deposit_service, deposit_service_db, "Uses")
+Rel(authorization_service, authorization_service_db, "Uses")
+
+
+@enduml

@@ -1,0 +1,34 @@
+@startuml
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+
+Person(client, "Клиент")
+
+Person(external_operator, "Оператор колл центра внешнего")
+Person(back_office_person, "Сотрудник бэк-офиса")
+Person(call_center_agents, "Оператор колл-центра")
+
+System_Boundary(serviceBoundary, "Сервисы в контуре банка") {
+  System_Boundary(serviceBoundary2, "Сервисы банка") {
+    System(gateway, "API Gateway")
+    System(rate_service, "Сервис ставок", "Управление ставками")
+    System(async_service, "Async Service", "Kafka")
+    System(rate_service_db, "DB Rate")
+  }
+  System(call_center, "Колл-центр", "CRM-платформа")
+}
+
+
+System_Ext(external_call_center, "Внешний кол-центр")
+
+Rel(back_office_person, gateway, "HTTP")
+Rel(call_center_agents, call_center, "Использует")
+Rel(rate_service, rate_service_db, "Использует")
+Rel(rate_service, async_service, "Обработка событий")
+Rel(async_service, call_center, "Обработка событий")
+Rel(rate_service, external_call_center, "SFTP")
+Rel(gateway, rate_service, "HTTP")
+Rel(external_operator, external_call_center, "Использует")
+Rel(client, call_center, "Звонит")
+Rel(client, external_call_center, "Звонит")
+
+@enduml
