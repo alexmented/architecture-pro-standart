@@ -1,0 +1,51 @@
+@startuml
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+
+Person(customer, "Клиент", "Клиент банка")
+Person(back_office_person, "Сотрудник бэк-офиса")
+Person(call_center_agents, "Оператор колл-центра")
+
+System_Boundary(serviceBoundary, "Сервисы в контуре банка") {
+  System_Boundary(serviceBoundaryInner, "Сервисы кредитов банка") {
+    Container(gateway, "API gateway", "Kong")
+    Container(authorization_service, "Authorization Service", "Java Spring Boot", "Авторизация и аутентификация")
+    ContainerDb(credit_service_db, "Credit Service DB", "Oracle", "База данных заявок")
+    ContainerDb(authorization_service_db, "Authorization DB", "Oracle", "База данных пользователей")
+    Container(async_service, "Async Service Adapter", "Kafka")
+    Container(notification_service, "Notification Service", "Java Spring Boot", "Уведомления")
+    Container(credit_service, "Credit Service", "Java Spring Boot", "Работа с кредитами")
+    Container(site, "Сайт", "PHP, React.js")
+    Container(internet_banking, "Интернет-банк", "ASP.NET")
+  }
+  System(abs, "Автоматизированная банковская система", "Delphi, Oracle")
+  System(call_center, "Колл-центр", "CRM Платформа")
+   System(scoring_system, "Система скоринга", "Python/ML")
+  System(bpm, "Кредитный конвейер", "Comunda BPM")
+}
+
+ System_Ext(credit_history, "Бюро кредитных историй")
+System_Ext(sms_operator, "Телеком оператор", "Оператор для отправки СМС")
+
+Rel(customer, site, "Просмотр депозитов и подача онлайн-заявок")
+Rel(customer, internet_banking, "Подача онлайн-заявок")
+Rel(call_center_agents, call_center, "Создание заявки на депозит")
+Rel(back_office_person, abs, "Обработка заявок")
+Rel(site, gateway, "HTTP")
+Rel(internet_banking, gateway, "HTTP")
+Rel(gateway, authorization_service, "HTTP")
+Rel(gateway, notification_service, "HTTP")
+Rel(notification_service, call_center, "HTTP")
+Rel(notification_service, sms_operator, "HTTP")
+Rel(gateway, credit_service, "HTTP")
+Rel(async_service, abs, "Обработка событий")
+Rel(sms_operator, customer, "Отправка СМС")
+Rel(credit_service, async_service, "Обработка событий")
+Rel(credit_service, scoring_system, "HTTP")
+Rel(credit_service, credit_history, "HTTP")
+Rel(credit_service, bpm, "HTTP")
+Rel(notification_service, async_service, "Обработка событий")
+Rel(credit_service, credit_service_db, "Uses")
+Rel(authorization_service, authorization_service_db, "Uses")
+
+
+@enduml
