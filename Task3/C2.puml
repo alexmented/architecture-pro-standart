@@ -7,17 +7,17 @@ Person(call_center_agents, "Оператор колл-центра")
 
 System_Boundary(serviceBoundary, "Сервисы в контуре банка") {
   System_Boundary(serviceBoundaryInner, "Сервисы депозита банка") {
-    System(gateway, "API gateway")
-    System(authorization_service, "Authorization and authentification")
-    System(deposit_service_db, "Deposit Service DB", "База данных заявок")
-    System(authorization_service_db, "Authorization DB", "База данных пользователей")
-    System(async_service, "Async Service", "Kafka")
-    System(notification_service, "Notification Service", "Уведомления")
-    System(deposit_service, "Deposit Service", "Работа с депозитами")
-    System(site, "Сайт")
-    System(internet_banking, "Интернет-банк")
+    Container(gateway, "API gateway", "Kong")
+    Container(authorization_service, "Authorization Service", "Java Spring Boot", "Авторизация и аутентификация")
+    ContainerDb(deposit_service_db, "Deposit Service DB", "Oracle", "База данных заявок")
+    ContainerDb(authorization_service_db, "Authorization DB", "Oracle", "База данных пользователей")
+    Container(async_service, "Async Service", "Kafka")
+    Container(notification_service, "Notification Service", "Java Spring Boot", "Уведомления")
+    Container(deposit_service, "Deposit Service", "Java Spring Boot", "Работа с депозитами")
+    Container(site, "Сайт", "PHP, React.js")
+    Container(internet_banking, "Интернет-банк", "ASP.NET")
   }
-  System(abs, "АБС", "Автоматизированная банковская система")
+  System(abs, "Автоматизированная банковская система", "Delphi, Oracle")
   System(call_center, "Колл-центр", "CRM-платформа")
 }
 

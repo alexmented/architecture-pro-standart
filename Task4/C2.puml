@@ -9,10 +9,10 @@ Person(call_center_agents, "Оператор колл-центра")
 
 System_Boundary(serviceBoundary, "Сервисы в контуре банка") {
   System_Boundary(serviceBoundary2, "Сервисы банка") {
-    System(gateway, "API Gateway")
-    System(rate_service, "Сервис ставок", "Управление ставками")
-    System(async_service, "Async Service", "Kafka")
-    System(rate_service_db, "DB Rate")
+    Container(gateway, "API Gateway", "Kong")
+    Container(rate_service, "Сервис ставок", "Java Spring Boot", "Управление ставками")
+    Container(async_service, "Async Service", "Kafka")
+    ContainerDb(rate_service_db, "DB Rate", "Oracle")
   }
   System(call_center, "Колл-центр", "CRM-платформа")
 }
